@@ -1,0 +1,32 @@
+{
+  "name": "acorn-bigint",
+  "description": "Support for BigInt in acorn",
+  "homepage": "https://github.com/adrianheine/acorn-bigint",
+  "contributors": [
+    "Adrian Heine <mail@adrianheine.de>"
+  ],
+  "engines": {
+    "node": ">=4.8.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adrianheine/acorn-bigint"
+  },
+  "license": "AGPL-3.0",
+  "scripts": {
+    "test": "mocha",
+    "test:test262": "node run_test262.js",
+    "lint": "eslint -c .eslintrc.json ."
+  },
+  "dependencies": {
+    "acorn": "^5.2.1"
+  },
+  "version": "0.1.0",
+  "devDependencies": {
+    "eslint": "^4.13.1",
+    "eslint-plugin-node": "^5.2.1",
+    "mocha": "^4.0.1",
+    "test262": "git+https://github.com/tc39/test262.git#4fdbb34914eec8b004343fd34f3955b45ee83bc6",
+    "test262-parser-runner": "^0.2.0"
+  }
+}
