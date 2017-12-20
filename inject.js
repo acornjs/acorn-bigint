@@ -15,10 +15,13 @@ module.exports = function (acorn) {
 
     instance.extend("readRadixNumber", function (_superF) {
       return function(radix) {
+        let start = this.pos
         this.pos += 2 // 0x
         let val = this.readInt(radix)
         if (val === null) this.raise(this.start + 2, `Expected number in radix ${radix}`)
         if (this.input.charCodeAt(this.pos) == 110) {
+          let str = this.input.slice(start, this.pos)
+          val = typeof BigInt !== "undefined" && BigInt.parseInt ? BigInt.parseInt(str) : null
           ++this.pos
         } else if (isIdentifierStart(this.fullCharCodeAtPos())) this.raise(this.pos, "Identifier directly after number")
         return this.finishToken(tt.num, val)
@@ -46,7 +49,7 @@ module.exports = function (acorn) {
         }
 
         let str = this.input.slice(start, this.pos)
-        let val = parseFloat(str)
+        let val = typeof BigInt !== "undefined" && BigInt.parseInt ? BigInt.parseInt(str) : null
         ++this.pos
         return this.finishToken(tt.num, val)
       }

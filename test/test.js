@@ -22,13 +22,15 @@ function testFail(text, expectedError, additionalOptions) {
   })
 }
 
+const maybeBigInt = str => typeof BigInt !== "undefined" && BigInt.parseInt ? BigInt.parseInt(str) : null
+
 describe("acorn-bigint", function () {
   const digits = [
     {d: "0", ast: start => ({
       type: "Literal",
       start: start,
       end: start + 2,
-      value: 0,
+      value: maybeBigInt("0"),
       raw: "0n",
       bigint: "0n"
     })},
@@ -37,7 +39,7 @@ describe("acorn-bigint", function () {
       type: "Literal",
       start: start,
       end: start + 2,
-      value: 2,
+      value: maybeBigInt("2"),
       raw: "2n",
       bigint: "2n"
     })},
@@ -46,7 +48,7 @@ describe("acorn-bigint", function () {
       type: "Literal",
       start: start,
       end: start + 4,
-      value: 2,
+      value: maybeBigInt("2"),
       raw: "0x2n",
       bigint: "0x2n"
     })},
@@ -55,7 +57,7 @@ describe("acorn-bigint", function () {
       type: "Literal",
       start: start,
       end: start + 4,
-      value: 2,
+      value: maybeBigInt("2"),
       raw: "0o2n",
       bigint: "0o2n"
     })},
@@ -64,7 +66,7 @@ describe("acorn-bigint", function () {
       type: "Literal",
       start: start,
       end: start + 5,
-      value: 2,
+      value: maybeBigInt("2"),
       raw: "0b10n",
       bigint: "0b10n"
     })},
@@ -78,7 +80,7 @@ describe("acorn-bigint", function () {
         type: "Literal",
         start: start + 1,
         end: start + 36,
-        value: 2.5412571553628564e+38,
+        value: maybeBigInt("0xbf2ed51ff75d380fd3be813ec6185780"),
         raw: "0xbf2ed51ff75d380fd3be813ec6185780n",
         bigint: "0xbf2ed51ff75d380fd3be813ec6185780n"
       }
@@ -185,7 +187,7 @@ describe("acorn-bigint", function () {
               type: "Literal",
               start: 13,
               end: 15,
-              value: 0,
+              value: maybeBigInt("0"),
               raw: "0n",
               bigint: "0n"
             }
