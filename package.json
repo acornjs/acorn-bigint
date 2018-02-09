@@ -1,7 +1,7 @@
 {
   "name": "acorn-bigint",
   "description": "Support for BigInt in acorn",
-  "homepage": "https://github.com/adrianheine/acorn-bigint",
+  "homepage": "https://github.com/acornjs/acorn-bigint",
   "contributors": [
     "Adrian Heine <mail@adrianheine.de>"
   ],
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/adrianheine/acorn-bigint"
+    "url": "https://github.com/acornjs/acorn-bigint"
   },
   "license": "AGPL-3.0",
   "scripts": {
