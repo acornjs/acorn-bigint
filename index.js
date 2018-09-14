@@ -39,7 +39,7 @@ module.exports = function(Parser) {
       // Not a BigInt, reset and parse again
       if (this.input.charCodeAt(this.pos) != 110) {
         this.pos = start
-        super.readNumber(startsWithDot)
+        return super.readNumber(startsWithDot)
       }
 
       let str = this.input.slice(start, this.pos)
