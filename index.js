@@ -19,7 +19,7 @@ module.exports = function(Parser) {
       if (val === null) this.raise(this.start + 2, `Expected number in radix ${radix}`)
       if (this.input.charCodeAt(this.pos) == 110) {
         let str = this.input.slice(start, this.pos)
-        val = typeof BigInt !== "undefined" && BigInt.parseInt ? BigInt.parseInt(str) : null
+        val = typeof BigInt !== "undefined" ? BigInt(str) : null
         ++this.pos
       } else if (isIdentifierStart(this.fullCharCodeAtPos())) this.raise(this.pos, "Identifier directly after number")
       return this.finishToken(tt.num, val)
