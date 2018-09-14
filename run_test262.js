@@ -6,11 +6,11 @@ const acorn = require("acorn")
 const bigInt = require(".")
 const Parser = acorn.Parser.extend(bigInt)
 
-const unsupportedFeatures = ["object-rest", "object-spread", "regexp-named-groups",
-  "async-iteration", "class-fields", "class-fields-public",
-  "computed-property-names", // Only used for class fields
-  "regexp-unicode-property-escapes",
-  "regexp-lookbehind", "regexp-dotall", "optional-catch-binding"]
+const unsupportedFeatures = [
+  "async-iteration",
+  "class-fields-private",
+  "class-fields-public"
+]
 
 run(
   (content, options) => Parser.parse(content, {sourceType: options.sourceType, ecmaVersion: 9}),
