@@ -1,6 +1,8 @@
 "use strict"
 
-const {tokTypes: tt, isIdentifierStart} = require("acorn")
+const acorn = require("acorn")
+const tt = acorn.tokTypes
+const isIdentifierStart = acorn.isIdentifierStart
 
 module.exports = function(Parser) {
   return class extends Parser {
