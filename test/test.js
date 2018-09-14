@@ -7,7 +7,7 @@ const Parser = acorn.Parser.extend(require(".."))
 function test(text, expectedResult, additionalOptions) {
   it(text, function () {
     const result = Parser.parse(text, Object.assign({ ecmaVersion: 9 }, additionalOptions))
-    assert.deepEqual(result.body[0], expectedResult)
+    assert.deepStrictEqual(result.body[0], expectedResult)
   })
 }
 function testFail(text, expectedError, additionalOptions) {
@@ -16,75 +16,35 @@ function testFail(text, expectedError, additionalOptions) {
     try {
       Parser.parse(text, Object.assign({ ecmaVersion: 9 }, additionalOptions))
     } catch (e) {
-      assert.equal(e.message, expectedError)
+      assert.strictEqual(e.message, expectedError)
       failed = true
     }
     assert(failed)
   })
 }
 
-const maybeBigInt = str => typeof BigInt !== "undefined" && BigInt.parseInt ? BigInt.parseInt(str) : null
+const newNode = (start, props) => Object.assign(new acorn.Node({options: {}}, start), props)
+const newBigIntLiteral = (start, stringValue) => newNode(start, {
+  type: "Literal",
+  end: start + stringValue.length + 1,
+  value: typeof BigInt !== "undefined" ? BigInt(stringValue) : null,
+  raw: `${stringValue}n`,
+  bigint: `${stringValue}n`
+})
 
 describe("acorn-bigint", function () {
   const digits = [
-    {d: "0", ast: start => ({
-      type: "Literal",
-      start: start,
-      end: start + 2,
-      value: maybeBigInt("0"),
-      raw: "0n",
-      bigint: "0n"
-    })},
-
-    {d: "2", ast: start => ({
-      type: "Literal",
-      start: start,
-      end: start + 2,
-      value: maybeBigInt("2"),
-      raw: "2n",
-      bigint: "2n"
-    })},
-
-    {d: "0x2", ast: start => ({
-      type: "Literal",
-      start: start,
-      end: start + 4,
-      value: maybeBigInt("2"),
-      raw: "0x2n",
-      bigint: "0x2n"
-    })},
-
-    {d: "0o2", ast: start => ({
-      type: "Literal",
-      start: start,
-      end: start + 4,
-      value: maybeBigInt("2"),
-      raw: "0o2n",
-      bigint: "0o2n"
-    })},
-
-    {d: "0b10", ast: start => ({
-      type: "Literal",
-      start: start,
-      end: start + 5,
-      value: maybeBigInt("2"),
-      raw: "0b10n",
-      bigint: "0b10n"
-    })},
-    {d: "-0xbf2ed51ff75d380fd3be813ec6185780", ast: start => ({
+    {d: "0", ast: start => newBigIntLiteral(start, "0")},
+    {d: "2", ast: start => newBigIntLiteral(start, "2")},
+    {d: "0x2", ast: start => newBigIntLiteral(start, "0x2")},
+    {d: "0o2", ast: start => newBigIntLiteral(start, "0o2")},
+    {d: "0b10", ast: start => newBigIntLiteral(start, "0b10")},
+    {d: "-0xbf2ed51ff75d380fd3be813ec6185780", ast: start => newNode(start, {
       type: "UnaryExpression",
-      start: start,
       end: start + 36,
       operator: "-",
       prefix: true,
-      argument: {
-        type: "Literal",
-        start: start + 1,
-        end: start + 36,
-        value: maybeBigInt("0xbf2ed51ff75d380fd3be813ec6185780"),
-        raw: "0xbf2ed51ff75d380fd3be813ec6185780n",
-        bigint: "0xbf2ed51ff75d380fd3be813ec6185780n"
-      }
+      argument: newBigIntLiteral(start + 1, "0xbf2ed51ff75d380fd3be813ec6185780")
     })},
     {d: "02", error: start => `Identifier directly after number (1:${start + 2})`},
     {d: "2e2", error: start => `Identifier directly after number (1:${start + 3})`},
@@ -92,161 +52,133 @@ describe("acorn-bigint", function () {
     {d: ".4", error: start => `Identifier directly after number (1:${start + 2})`},
   ]
   const statements = [
-    {s: "let i = %s", ast: content => ({
+    {s: "let i = %s", ast: content => newNode(0, {
       type: "VariableDeclaration",
-      start: 0,
       end: content.end,
       kind: "let",
-      declarations: [{
+      declarations: [newNode(4, {
         type: "VariableDeclarator",
-        start: 4,
         end: content.end,
-        id: {
+        id: newNode(4, {
           type: "Identifier",
-          start: 4,
           end: 5,
           name: "i"
-        },
+        }),
         init: content
-      }]
+      })]
     })},
 
-    {s: "i = %s", ast: content => ({
+    {s: "i = %s", ast: content => newNode(0, {
       type: "ExpressionStatement",
-      start: 0,
       end: content.end,
-      expression: {
+      expression: newNode(0, {
         type: "AssignmentExpression",
-        start: 0,
         end: content.end,
         operator: "=",
-        left: {
+        left: newNode(0, {
           type: "Identifier",
-          start: 0,
           end: 1,
           name: "i"
-        },
+        }),
         right: content
-      }
+      })
     })},
 
-    {s: "((i = %s) => {})", ast: content => ({
+    {s: "((i = %s) => {})", ast: content => newNode(0, {
       type: "ExpressionStatement",
-      start: 0,
       end: content.end + 8,
-      expression: {
+      expression: newNode(1, {
         type: "ArrowFunctionExpression",
-        start: 1,
         end: content.end + 7,
         id: null,
         generator: false,
         expression: false,
         async: false,
         params: [
-          {
+          newNode(2, {
             type: "AssignmentPattern",
-            start: 2,
             end: content.end,
-            left: {
+            left: newNode(2, {
               type: "Identifier",
-              start: 2,
               end: 3,
               name: "i"
-            },
+            }),
             right: content
-          }
+          })
         ],
-        body: {
+        body: newNode(content.end + 5, {
           type: "BlockStatement",
-          start: content.end + 5,
           end: content.end + 7,
           body: []
-        }
-      }
+        })
+      })
     })},
 
-    {s: "for (let i = 0n; i < %s;++i) {}", ast: content => ({
+    {s: "for (let i = 0n; i < %s;++i) {}", ast: content => newNode(0, {
       type: "ForStatement",
-      start: 0,
       end: content.end + 8,
-      init: {
+      init: newNode(5, {
         type: "VariableDeclaration",
-        start: 5,
         end: 15,
         declarations: [
-          {
+          newNode(9, {
             type: "VariableDeclarator",
-            start: 9,
             end: 15,
-            id: {
+            id: newNode(9, {
               type: "Identifier",
-              start: 9,
               end: 10,
               name: "i"
-            },
-            init: {
-              type: "Literal",
-              start: 13,
-              end: 15,
-              value: maybeBigInt("0"),
-              raw: "0n",
-              bigint: "0n"
-            }
-          }
+            }),
+            init: newBigIntLiteral(13, "0")
+          })
         ],
         kind: "let"
-      },
-      test: {
+      }),
+      test: newNode(17, {
         type: "BinaryExpression",
-        start: 17,
         end: content.end,
-        left: {
+        left: newNode(17, {
           type: "Identifier",
           start: 17,
           end: 18,
           name: "i"
-        },
+        }),
         operator: "<",
         right: content
-      },
-      update: {
+      }),
+      update: newNode(content.end + 1, {
         type: "UpdateExpression",
-        start: content.end + 1,
         end: content.end + 4,
         operator: "++",
         prefix: true,
-        argument: {
+        argument: newNode(content.end + 3, {
           type: "Identifier",
-          start: content.end + 3,
           end: content.end + 4,
           name: "i"
-        }
-      },
-      body: {
+        })
+      }),
+      body: newNode(content.end + 6, {
         type: "BlockStatement",
-        start: content.end + 6,
         end: content.end + 8,
         body: []
-      }
+      })
     })},
 
-    {s: "i + %s", ast: content => ({
+    {s: "i + %s", ast: content => newNode(0, {
       type: "ExpressionStatement",
-      start: 0,
       end: content.end,
-      expression: {
+      expression: newNode(0, {
         type: "BinaryExpression",
-        start: 0,
         end: content.end,
-        left: {
+        left: newNode(0, {
           type: "Identifier",
           start: 0,
           end: 1,
           name: "i"
-        },
+        }),
         operator: "+",
         right: content
-      }
+      })
     })}
   ]
   statements.forEach(statement => {
