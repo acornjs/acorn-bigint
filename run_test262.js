@@ -2,7 +2,9 @@
 
 const path = require("path")
 const run = require("test262-parser-runner")
-const parse = require(".").parse
+const acorn = require("acorn")
+const bigInt = require(".")
+const Parser = acorn.Parser.extend(bigInt)
 
 const unsupportedFeatures = ["object-rest", "object-spread", "regexp-named-groups",
   "async-iteration", "class-fields", "class-fields-public",
@@ -11,7 +13,7 @@ const unsupportedFeatures = ["object-rest", "object-spread", "regexp-named-group
   "regexp-lookbehind", "regexp-dotall", "optional-catch-binding"]
 
 run(
-  (content, options) => parse(content, {sourceType: options.sourceType, ecmaVersion: 9, plugins: { bigInt: true }}),
+  (content, options) => Parser.parse(content, {sourceType: options.sourceType, ecmaVersion: 9}),
   {
     testsDirectory: path.dirname(require.resolve("test262/package.json")),
     skip: test => (!test.attrs.features || !test.attrs.features.includes("BigInt") || unsupportedFeatures.some(f => test.attrs.features.includes(f))),
