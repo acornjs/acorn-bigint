@@ -45,7 +45,7 @@ module.exports = function(Parser) {
       }
 
       let str = this.input.slice(start, this.pos)
-      let val = typeof BigInt !== "undefined" && BigInt.parseInt ? BigInt.parseInt(str) : null
+      let val = typeof BigInt !== "undefined" ? BigInt(str) : null
       ++this.pos
       return this.finishToken(tt.num, val)
     }
