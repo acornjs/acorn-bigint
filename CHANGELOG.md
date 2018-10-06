@@ -1,3 +1,7 @@
+## 0.3.1 (2018-10-06)
+
+* Fix creation of BigInt values everywhere (Thanks, Gus Caplan!)
+
 ## 0.3.0 (2018-09-14)
 
 * Update to new acorn 6 interface
