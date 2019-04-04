@@ -8,7 +8,7 @@ module.exports = function(Parser) {
   return class extends Parser {
     parseLiteral(value) {
       const node = super.parseLiteral(value)
-      if (node.raw.charCodeAt(node.raw.length - 1) == 110) node.bigint = node.raw
+      if (node.raw.charCodeAt(node.raw.length - 1) == 110) node.bigint = this.getNumberInput(node.start, node.end)
       return node
     }
 
@@ -18,7 +18,7 @@ module.exports = function(Parser) {
       let val = this.readInt(radix)
       if (val === null) this.raise(this.start + 2, `Expected number in radix ${radix}`)
       if (this.input.charCodeAt(this.pos) == 110) {
-        let str = this.input.slice(start, this.pos)
+        let str = this.getNumberInput(start, this.pos)
         val = typeof BigInt !== "undefined" ? BigInt(str) : null
         ++this.pos
       } else if (isIdentifierStart(this.fullCharCodeAtPos())) this.raise(this.pos, "Identifier directly after number")
@@ -44,10 +44,16 @@ module.exports = function(Parser) {
         return super.readNumber(startsWithDot)
       }
 
-      let str = this.input.slice(start, this.pos)
+      let str = this.getNumberInput(start, this.pos)
       let val = typeof BigInt !== "undefined" ? BigInt(str) : null
       ++this.pos
       return this.finishToken(tt.num, val)
+    }
+
+    // This is basically a hook for acorn-numeric-separator
+    getNumberInput(start, end) {
+      if (super.getNumberInput) return super.getNumberInput(start, end)
+      return this.input.slice(start, end)
     }
   }
 }
