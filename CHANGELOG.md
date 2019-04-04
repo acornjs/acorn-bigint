@@ -1,3 +1,7 @@
+## 0.4.0 (2019-04-04)
+
+* Make compatible with acorn-numeric-separator
+
 ## 0.3.1 (2018-10-06)
 
 * Fix creation of BigInt values everywhere (Thanks, Gus Caplan!)
