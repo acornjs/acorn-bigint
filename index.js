@@ -8,7 +8,7 @@ module.exports = function(Parser) {
   return class extends Parser {
     parseLiteral(value) {
       const node = super.parseLiteral(value)
-      if (node.raw.charCodeAt(node.raw.length - 1) == 110) node.bigint = this.getNumberInput(node.start, node.end)
+      if (node.raw.charCodeAt(node.raw.length - 1) == 110) node.bigint = this.getNumberInput(node.start, node.end - 1)
       return node
     }
 

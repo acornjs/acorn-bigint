@@ -29,7 +29,7 @@ const newBigIntLiteral = (start, stringValue) => newNode(start, {
   end: start + stringValue.length + 1,
   value: typeof BigInt !== "undefined" ? BigInt(stringValue) : null,
   raw: `${stringValue}n`,
-  bigint: `${stringValue}n`
+  bigint: stringValue
 })
 
 describe("acorn-bigint", function () {
