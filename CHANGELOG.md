@@ -1,3 +1,7 @@
+## 1.0.0 (2020-06-11)
+
+* Remove `n` from bigint property (according to estree)
+
 ## 0.4.0 (2019-04-04)
 
 * Make compatible with acorn-numeric-separator
